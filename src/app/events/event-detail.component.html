@@ -1,0 +1,29 @@
+<div class="row" *ngIf="event">
+  <div class="card w-50 mb-3" id="event-card" [title]="getEventCardToolTip()">
+    <div class="card-body" (click)="toggleParticipantsDisplay()">
+      <h4 class="card-title">{{ event.name }}</h4>
+      <h6 class="card-subtitle">{{ event.theme }}</h6>
+      <p class="card-text">{{ event.description }}</p>
+      <p class="card-text">
+        <small class="text-muted"
+          >Duration: {{ event.durationInMinutes }} minutes</small
+        >
+      </p>
+    </div>
+  </div>
+  <div *ngIf="areParticipantsShown && event.participants.length > 0">
+    <h4>Participants</h4>
+    <div class="row">
+      <div class="col-sm-5" *ngFor="let participant of event.participants">
+        <div class="card bg-light mb-3">
+          <div class="card-body">
+            <h5 class="card-title">
+              {{ participant.firstName }} {{ participant.lastName }}
+            </h5>
+            <p class="card-text">{{ participant.email }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
