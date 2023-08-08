@@ -4,7 +4,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { WelcomeComponent } from './home/welcome.component';
 import { EventsComponent } from './events/events.component';
 import { CommonModule } from '@angular/common';
-import { EventDetailComponent } from './events/event-detail.component';
+import { EventDetailComponent } from './events/event-detail/event-detail.component';
+import { EditEventComponent } from './events/edit-event/edit-event.component';
 
 const routes: Routes = [
   {
@@ -15,6 +16,7 @@ const routes: Routes = [
   { path: 'home', component: WelcomeComponent },
   { path: 'events', component: EventsComponent },
   { path: 'events/:id', component: EventDetailComponent },
+  { path: 'events/edit/:id', component: EditEventComponent },
 ];
 
 @NgModule({

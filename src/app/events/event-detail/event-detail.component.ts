@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Event } from './event.model';
+import { Event } from '../event.model';
 import { ActivatedRoute } from '@angular/router';
-import { EventService } from './event.service';
+import { EventService } from '../event.service';
 
 @Component({
   selector: 'ems-event-detail',

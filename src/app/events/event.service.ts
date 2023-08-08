@@ -10,6 +10,7 @@ export class EventService {
   private endPointUrl = '/api/events';
 
   constructor(private http: HttpClient) {}
+
   getEvents(): Observable<Event[]> {
     return this.http.get<Event[]>(this.endPointUrl);
   }
