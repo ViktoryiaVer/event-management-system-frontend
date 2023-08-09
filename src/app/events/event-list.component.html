@@ -1,0 +1,29 @@
+<div class="card">
+  <div class="card-header">
+    Events
+    <i
+      class="fa fa-plus icon-button"
+      title="Create new event"
+      [routerLink]="['/events/new']"
+    ></i>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div
+        class="col-sm-5"
+        *ngFor="let event of events"
+        [routerLink]="['/events/', event.id]"
+      >
+        <div class="event-card card mb-3">
+          <div class="card-header">
+            {{ event.theme }}
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">{{ event.name }}</h5>
+            <p class="card-text">{{ event.description }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

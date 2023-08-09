@@ -1,0 +1,11 @@
+.event-card:hover {
+  cursor: pointer;
+}
+
+.icon-button:hover {
+  cursor: pointer;
+}
+
+.icon-button {
+  margin-left: 5px;
+}

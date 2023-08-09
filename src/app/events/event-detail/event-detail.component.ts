@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Event } from '../event.model';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EventService } from '../event.service';
 
 @Component({
@@ -9,12 +9,14 @@ import { EventService } from '../event.service';
   styleUrls: ['./event-detail.component.css'],
 })
 export class EventDetailComponent implements OnInit {
-  event: Event | undefined;
+  pageTitle: string = 'Event details';
+  event!: Event;
   areParticipantsShown: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
-    private eventService: EventService
+    private eventService: EventService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -34,5 +36,11 @@ export class EventDetailComponent implements OnInit {
     return `Click to ${
       this.areParticipantsShown ? 'hide' : 'show'
     } participants `;
+  }
+
+  deleteEvent() {
+    this.eventService.deleteEvent(this.event.id).subscribe({
+      next: () => this.router.navigate(['/events']),
+    });
   }
 }

@@ -1,10 +1,18 @@
 <div class="row" *ngIf="event">
-  <div class="card w-50 mb-3">
+  <div class="card w-50 mb-3 p-0">
+    <div class="card-header">
+      {{ pageTitle }}
+    </div>
     <div class="card-body">
+      <i
+        class="fa fa-times icon-button"
+        id="delete-icon"
+        (click)="deleteEvent()"
+      ></i>
       <i
         class="fa fa-pencil-square-o icon-button"
         id="pencil-icon"
-        [routerLink]="['/events/edit/', event.id]"
+        [routerLink]="['/events', event.id, 'edit']"
       ></i>
       <h4 class="card-title">{{ event.name }}</h4>
       <h6 class="card-subtitle">{{ event.theme }}</h6>
@@ -16,6 +24,7 @@
       </p>
       <i
         class="fa icon-button"
+        *ngIf="event.participants.length > 0"
         [title]="getEventCardToolTip()"
         (click)="toggleParticipantsDisplay()"
         ngClass="{{
@@ -25,18 +34,8 @@
     </div>
   </div>
   <div *ngIf="areParticipantsShown && event.participants.length > 0">
-    <h4>Participants</h4>
-    <div class="row">
-      <div class="col-sm-5" *ngFor="let participant of event.participants">
-        <div class="card bg-light mb-3">
-          <div class="card-body">
-            <h5 class="card-title">
-              {{ participant.firstName }} {{ participant.lastName }}
-            </h5>
-            <p class="card-text">{{ participant.email }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
+    <ems-participant-list
+      [participants]="event.participants"
+    ></ems-participant-list>
   </div>
 </div>

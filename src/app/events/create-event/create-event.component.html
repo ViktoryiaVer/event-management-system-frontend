@@ -3,7 +3,7 @@
     {{ pageTitle }}
   </div>
   <div class="card-body">
-    <form [formGroup]="eventForm" (ngSubmit)="updateEvent()" novalidate>
+    <form novalidate [formGroup]="eventForm" (ngSubmit)="saveEvent()">
       <div class="form-group row mb-2">
         <label class="col-md-2 col-form-label" for="eventNameId"
           >Event name</label
@@ -76,7 +76,7 @@
             class="btn btn-outline-secondary me-3"
             style="width: 80px"
             type="button"
-            title="Cancel your edits"
+            title="Cancel your saved event"
             [routerLink]="['/events']"
           >
             Cancel

@@ -3,12 +3,13 @@ import { Event } from './event.model';
 import { EventService } from './event.service';
 
 @Component({
-  selector: 'ems-events',
-  templateUrl: './events.component.html',
-  styleUrls: ['./events.component.css'],
+  selector: 'ems-event-list',
+  templateUrl: './event-list.component.html',
+  styleUrls: ['./event-list.component.css'],
 })
-export class EventsComponent implements OnInit {
-  events: Event[] = [];
+export class EventListComponent implements OnInit {
+  pageTitle: string = 'Events';
+  events!: Event[];
 
   constructor(private eventService: EventService) {}
 

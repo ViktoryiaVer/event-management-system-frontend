@@ -1,0 +1,23 @@
+<div>
+  <h4>
+    Participants
+    <i
+      class="fa fa-plus icon-button"
+      title="Add a participant"
+      [routerLink]="['/events/new']"
+    ></i>
+  </h4>
+</div>
+
+<div class="row">
+  <div class="col-sm-5" *ngFor="let participant of participants">
+    <div class="card bg-light mb-3">
+      <div class="card-body">
+        <h5 class="card-title">
+          {{ participant.firstName }} {{ participant.lastName }}
+        </h5>
+        <p class="card-text">{{ participant.email }}</p>
+      </div>
+    </div>
+  </div>
+</div>
