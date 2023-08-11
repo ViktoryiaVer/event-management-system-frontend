@@ -7,11 +7,13 @@
       <i
         class="fa fa-times icon-button"
         id="delete-icon"
+        title="Delete the event"
         (click)="deleteEvent()"
       ></i>
       <i
         class="fa fa-pencil-square-o icon-button"
         id="pencil-icon"
+        title="Edit the event"
         [routerLink]="['/events', event.id, 'edit']"
       ></i>
       <h4 class="card-title">{{ event.name }}</h4>
@@ -31,11 +33,18 @@
           areParticipantsShown ? 'fa-chevron-up' : 'fa-chevron-down'
         }}"
       ></i>
+      <i
+        *ngIf="event.participants.length === 0"
+        class="fa fa-plus icon-button"
+        title="Add a participant"
+        [routerLink]="['/events', event.id, 'participants']"
+      ></i>
     </div>
   </div>
   <div *ngIf="areParticipantsShown && event.participants.length > 0">
     <ems-participant-list
       [participants]="event.participants"
+      [eventId]="event.id"
     ></ems-participant-list>
   </div>
 </div>

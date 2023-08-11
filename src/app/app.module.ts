@@ -8,6 +8,7 @@ import { EventDetailComponent } from './events/event-detail/event-detail.compone
 import { EditEventComponent } from './events/edit-event/edit-event.component';
 import { ParticipantListComponent } from './events/event-detail/participant-list.component';
 import { CreateEventComponent } from './events/create-event/create-event.component';
+import { AddParticipantComponent } from './events/event-detail/add-participant/add-participant.component';
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import { CreateEventComponent } from './events/create-event/create-event.compone
     EditEventComponent,
     ParticipantListComponent,
     CreateEventComponent,
+    AddParticipantComponent,
   ],
   imports: [
     BrowserModule,

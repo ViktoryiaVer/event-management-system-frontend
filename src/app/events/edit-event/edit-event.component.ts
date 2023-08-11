@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Event } from '../event.model';
 import { EventService } from '../event.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -14,6 +14,7 @@ export class EditEventComponent implements OnInit {
   pageTitle: string = 'Edit an event';
   eventForm!: FormGroup;
   subscription!: Subscription;
+  submitted: boolean = false;
   event!: Event;
 
   constructor(
@@ -25,16 +26,32 @@ export class EditEventComponent implements OnInit {
 
   ngOnInit(): void {
     this.eventForm = this.fb.group({
-      name: '',
-      description: '',
-      theme: '',
-      durationInMinutes: '',
+      name: ['', Validators.required],
+      description: ['', Validators.required],
+      theme: ['', Validators.required],
+      durationInMinutes: ['', [Validators.required, Validators.min(1)]],
     });
 
     this.subscription = this.route.paramMap.subscribe((params) => {
       const id = String(params.get('id'));
       this.getEvent(id);
     });
+  }
+
+  get name() {
+    return this.eventForm.controls['name'];
+  }
+
+  get description() {
+    return this.eventForm.controls['description'];
+  }
+
+  get theme() {
+    return this.eventForm.controls['theme'];
+  }
+
+  get durationInMinutes() {
+    return this.eventForm.controls['durationInMinutes'];
   }
 
   getEvent(id: string): void {
@@ -58,6 +75,8 @@ export class EditEventComponent implements OnInit {
   }
 
   updateEvent(): void {
+    this.submitted = true;
+
     if (this.eventForm.valid) {
       if (this.eventForm.dirty) {
         const eventToUpdate = { ...this.event, ...this.eventForm.value };
@@ -73,6 +92,7 @@ export class EditEventComponent implements OnInit {
 
   onUpdateComplete(): void {
     this.eventForm.reset();
+    this.submitted = false;
     this.router.navigate(['/events']);
   }
 }

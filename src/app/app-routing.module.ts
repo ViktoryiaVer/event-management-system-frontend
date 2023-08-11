@@ -7,6 +7,7 @@ import { EditEventComponent } from './events/edit-event/edit-event.component';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CreateEventComponent } from './events/create-event/create-event.component';
+import { AddParticipantComponent } from './events/event-detail/add-participant/add-participant.component';
 
 const routes: Routes = [
   { path: 'home', component: WelcomeComponent },
@@ -14,6 +15,7 @@ const routes: Routes = [
   { path: 'events/new', component: CreateEventComponent },
   { path: 'events/:id', component: EventDetailComponent },
   { path: 'events/:id/edit', component: EditEventComponent },
+  { path: 'events/:id/participants', component: AddParticipantComponent },
   {
     path: '',
     pathMatch: 'full',

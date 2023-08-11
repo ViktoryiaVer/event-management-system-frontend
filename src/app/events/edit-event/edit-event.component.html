@@ -15,7 +15,16 @@
             type="text"
             placeholder="Event name"
             formControlName="name"
+            [ngClass]="{
+              'is-invalid':
+                name.invalid && (name.dirty || name.touched || submitted)
+            }"
           />
+          <span class="invalid-feedback">
+            <span *ngIf="name.errors?.['required']">
+              Please enter the event name.
+            </span>
+          </span>
         </div>
       </div>
 
@@ -29,7 +38,16 @@
             id="eventDescriptionId"
             placeholder="Event description"
             formControlName="description"
+            [ngClass]="{
+              'is-invalid':
+                description.invalid && (name.dirty || name.touched || submitted)
+            }"
           ></textarea>
+          <span class="invalid-feedback">
+            <span *ngIf="description.errors?.['required']">
+              Please enter the event description.
+            </span>
+          </span>
         </div>
       </div>
 
@@ -44,7 +62,16 @@
             type="text"
             placeholder="Event theme"
             formControlName="theme"
+            [ngClass]="{
+              'is-invalid':
+                theme.invalid && (theme.dirty || theme.touched || submitted)
+            }"
           />
+          <span class="invalid-feedback">
+            <span *ngIf="theme.errors?.['required']">
+              Please enter the event theme.
+            </span>
+          </span>
         </div>
       </div>
 
@@ -59,7 +86,22 @@
             type="number"
             placeholder="Duration in minutes"
             formControlName="durationInMinutes"
+            [ngClass]="{
+              'is-invalid':
+                durationInMinutes.invalid &&
+                (durationInMinutes.dirty ||
+                  durationInMinutes.touched ||
+                  submitted)
+            }"
           />
+          <span class="invalid-feedback">
+            <span *ngIf="durationInMinutes.errors?.['required']">
+              Please enter the event duration.
+            </span>
+            <span *ngIf="durationInMinutes.errors?.['min']">
+              Event duration cannot be 0.
+            </span>
+          </span>
         </div>
       </div>
 

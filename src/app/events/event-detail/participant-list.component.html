@@ -4,7 +4,7 @@
     <i
       class="fa fa-plus icon-button"
       title="Add a participant"
-      [routerLink]="['/events/new']"
+      [routerLink]="['/events', eventId, 'participants']"
     ></i>
   </h4>
 </div>
@@ -13,6 +13,12 @@
   <div class="col-sm-5" *ngFor="let participant of participants">
     <div class="card bg-light mb-3">
       <div class="card-body">
+        <i
+          class="fa fa-times icon-button"
+          id="delete-icon"
+          title="Delete the participant"
+          (click)="deleteParticipant(participant)"
+        ></i>
         <h5 class="card-title">
           {{ participant.firstName }} {{ participant.lastName }}
         </h5>
