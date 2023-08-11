@@ -1,20 +1,42 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChildren,
+} from '@angular/core';
+import {
+  FormBuilder,
+  FormControlName,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EventService } from '../../event.service';
 import { Event } from '../../event.model';
+import { Observable, debounceTime, fromEvent, merge } from 'rxjs';
+import { GenericValidator } from 'src/app/shared/generic-validator';
+import { validationMessages } from 'src/app/shared/validation.messages';
 
 @Component({
   selector: 'ems-add-participant',
   templateUrl: './add-participant.component.html',
   styleUrls: ['./add-participant.component.css'],
 })
-export class AddParticipantComponent implements OnInit {
+export class AddParticipantComponent implements OnInit, AfterViewInit {
+  @ViewChildren(FormControlName, { read: ElementRef })
+  formInputElements!: ElementRef[];
+
   pageTitle: string = 'Add a participant to the event';
   participantForm!: FormGroup;
-  submitted: boolean = false;
   eventId!: string;
   event!: Event;
+  errorMessage!: string;
+
+  displayMessage: { [key: string]: string } = {};
+  private genericValidator = new GenericValidator(
+    validationMessages.participantForm
+  );
 
   constructor(
     private route: ActivatedRoute,
@@ -48,9 +70,21 @@ export class AddParticipantComponent implements OnInit {
     });
   }
 
-  saveParticipant() {
-    this.submitted = true;
+  ngAfterViewInit(): void {
+    const controlBlurs: Observable<any>[] = this.formInputElements.map(
+      (formControl: ElementRef) => fromEvent(formControl.nativeElement, 'blur')
+    );
 
+    merge(this.participantForm.valueChanges, ...controlBlurs)
+      .pipe(debounceTime(800))
+      .subscribe(() => {
+        this.displayMessage = this.genericValidator.processMessages(
+          this.participantForm
+        );
+      });
+  }
+
+  saveParticipant() {
     if (this.participantForm.valid) {
       if (this.participantForm.dirty) {
         const eventToUpdate = {
@@ -62,6 +96,7 @@ export class AddParticipantComponent implements OnInit {
         };
         this.eventService.updateEvent(eventToUpdate).subscribe({
           next: () => this.onSaveComplete(),
+          error: (err) => (this.errorMessage = err),
         });
       }
       this.onSaveComplete();
@@ -70,7 +105,6 @@ export class AddParticipantComponent implements OnInit {
 
   onSaveComplete(): void {
     this.participantForm.reset();
-    this.submitted = false;
     this.router.navigate(['/events', this.eventId]);
   }
 }

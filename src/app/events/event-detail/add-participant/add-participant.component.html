@@ -20,17 +20,12 @@
             placeholder="First name"
             formControlName="firstName"
             [ngClass]="{
-              'is-invalid':
-                firstName.invalid &&
-                (firstName.dirty || firstName.touched || submitted)
+              'is-invalid': displayMessage['firstName']
             }"
           />
           <span class="invalid-feedback">
-            <span *ngIf="firstName.errors?.['required']">
-              Please enter the first name.
-            </span>
-            <span *ngIf="firstName.errors?.['minlength']">
-              First name must be at least 3 characters long.
+            <span>
+              {{ displayMessage["firstName"] }}
             </span>
           </span>
         </div>
@@ -48,14 +43,12 @@
             placeholder="Last name"
             formControlName="lastName"
             [ngClass]="{
-              'is-invalid':
-                lastName.invalid &&
-                (lastName.dirty || lastName.touched || submitted)
+              'is-invalid': displayMessage['lastName']
             }"
           />
           <span class="invalid-feedback">
-            <span *ngIf="lastName.errors?.['required']">
-              Please enter the last name.
+            <span>
+              {{ displayMessage["lastName"] }}
             </span>
           </span>
         </div>
@@ -71,16 +64,12 @@
             placeholder="Email"
             formControlName="email"
             [ngClass]="{
-              'is-invalid':
-                email.invalid && (email.dirty || email.touched || submitted)
+              'is-invalid': displayMessage['email']
             }"
           />
           <span class="invalid-feedback">
-            <span *ngIf="email.errors?.['required']">
-              Please enter the email address.
-            </span>
-            <span *ngIf="email.errors?.['email']">
-              Please enter a valid email address.
+            <span>
+              {{ displayMessage["email"] }}
             </span>
           </span>
         </div>
@@ -92,7 +81,12 @@
             class="btn btn-primary me-3"
             style="width: 80px"
             type="submit"
-            title="Save your entered data"
+            [title]="
+              participantForm.valid
+                ? 'Save your entered data'
+                : 'Disabled until the form data is valid'
+            "
+            [disabled]="!participantForm.valid"
           >
             Save
           </button>
@@ -109,4 +103,5 @@
       </div>
     </form>
   </div>
+  <div class="alert alert-danger" *ngIf="errorMessage">{{ errorMessage }}</div>
 </div>

@@ -1,17 +1,39 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChildren,
+} from '@angular/core';
+import {
+  FormBuilder,
+  FormControlName,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { EventService } from '../event.service';
 import { Router } from '@angular/router';
+import { GenericValidator } from 'src/app/shared/generic-validator';
+import { validationMessages } from 'src/app/shared/validation.messages';
+import { Observable, debounceTime, fromEvent, merge } from 'rxjs';
 
 @Component({
   selector: 'ems-create-event',
   templateUrl: './create-event.component.html',
   styleUrls: ['./create-event.component.css'],
 })
-export class CreateEventComponent implements OnInit {
+export class CreateEventComponent implements OnInit, AfterViewInit {
+  @ViewChildren(FormControlName, { read: ElementRef })
+  formInputElements!: ElementRef[];
+
   pageTitle: string = 'Create a new event';
   eventForm!: FormGroup;
-  submitted: boolean = false;
+  errorMessage!: string;
+
+  displayMessage: { [key: string]: string } = {};
+  private genericValidator: GenericValidator = new GenericValidator(
+    validationMessages.eventForm
+  );
 
   constructor(
     private fb: FormBuilder,
@@ -26,6 +48,20 @@ export class CreateEventComponent implements OnInit {
       theme: ['', Validators.required],
       durationInMinutes: ['', [Validators.required, Validators.min(1)]],
     });
+  }
+
+  ngAfterViewInit(): void {
+    const controlBlurs: Observable<any>[] = this.formInputElements.map(
+      (formControl: ElementRef) => fromEvent(formControl.nativeElement, 'blur')
+    );
+
+    merge(this.eventForm.valueChanges, ...controlBlurs)
+      .pipe(debounceTime(800))
+      .subscribe(() => {
+        this.displayMessage = this.genericValidator.processMessages(
+          this.eventForm
+        );
+      });
   }
 
   get name() {
@@ -45,17 +81,16 @@ export class CreateEventComponent implements OnInit {
   }
 
   saveEvent() {
-    this.submitted = true;
     if (this.eventForm.valid) {
       this.eventService.saveEvent(this.eventForm.value).subscribe({
         next: () => this.onSaveComplete(),
+        error: (err) => (this.errorMessage = err),
       });
     }
   }
 
   onSaveComplete(): void {
     this.eventForm.reset();
-    this.submitted = false;
     this.router.navigate(['/events']);
   }
 }

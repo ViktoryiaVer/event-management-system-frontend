@@ -1,21 +1,43 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChildren,
+} from '@angular/core';
 import { Event } from '../event.model';
 import { EventService } from '../event.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import {
+  FormGroup,
+  FormBuilder,
+  Validators,
+  FormControlName,
+} from '@angular/forms';
+import { Observable, Subscription, debounceTime, fromEvent, merge } from 'rxjs';
+import { GenericValidator } from 'src/app/shared/generic-validator';
+import { validationMessages } from 'src/app/shared/validation.messages';
 
 @Component({
   selector: 'ems-edit-event',
   templateUrl: './edit-event.component.html',
   styleUrls: ['./edit-event.component.css'],
 })
-export class EditEventComponent implements OnInit {
+export class EditEventComponent implements OnInit, AfterViewInit {
+  @ViewChildren(FormControlName, { read: ElementRef })
+  formInputElements!: ElementRef[];
+
   pageTitle: string = 'Edit an event';
+  event!: Event;
+
   eventForm!: FormGroup;
   subscription!: Subscription;
-  submitted: boolean = false;
-  event!: Event;
+  errorMessage!: string;
+
+  displayMessage: { [key: string]: string } = {};
+  private genericValidator: GenericValidator = new GenericValidator(
+    validationMessages.eventForm
+  );
 
   constructor(
     private fb: FormBuilder,
@@ -38,6 +60,20 @@ export class EditEventComponent implements OnInit {
     });
   }
 
+  ngAfterViewInit(): void {
+    const controlBlurs: Observable<any>[] = this.formInputElements.map(
+      (formControl: ElementRef) => fromEvent(formControl.nativeElement, 'blur')
+    );
+
+    merge(this.eventForm.valueChanges, ...controlBlurs)
+      .pipe(debounceTime(800))
+      .subscribe(() => {
+        this.displayMessage = this.genericValidator.processMessages(
+          this.eventForm
+        );
+      });
+  }
+
   get name() {
     return this.eventForm.controls['name'];
   }
@@ -57,6 +93,7 @@ export class EditEventComponent implements OnInit {
   getEvent(id: string): void {
     this.eventService.getEvent(id).subscribe({
       next: (event: Event) => this.populateEventFormData(event),
+      error: (err) => (this.errorMessage = err),
     });
   }
 
@@ -75,14 +112,13 @@ export class EditEventComponent implements OnInit {
   }
 
   updateEvent(): void {
-    this.submitted = true;
-
     if (this.eventForm.valid) {
       if (this.eventForm.dirty) {
         const eventToUpdate = { ...this.event, ...this.eventForm.value };
 
         this.eventService.updateEvent(eventToUpdate).subscribe({
           next: () => this.onUpdateComplete(),
+          error: (err) => (this.errorMessage = err),
         });
       } else {
         this.onUpdateComplete();
@@ -92,7 +128,6 @@ export class EditEventComponent implements OnInit {
 
   onUpdateComplete(): void {
     this.eventForm.reset();
-    this.submitted = false;
     this.router.navigate(['/events']);
   }
 }

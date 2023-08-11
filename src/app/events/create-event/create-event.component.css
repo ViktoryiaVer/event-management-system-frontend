@@ -1,0 +1,4 @@
+.btn[disabled] {
+  pointer-events: auto;
+  cursor: auto;
+}
