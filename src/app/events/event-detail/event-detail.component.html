@@ -37,7 +37,7 @@
         *ngIf="event.participants.length === 0"
         class="fa fa-plus icon-button"
         title="Add a participant"
-        [routerLink]="['/events', event.id, 'participants']"
+        [routerLink]="['/events', event.id, 'edit', 'participants']"
       ></i>
     </div>
   </div>
