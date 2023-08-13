@@ -1,13 +1,13 @@
 <div class="card">
   <div class="card-header">
-    Events
+    {{ pageTitle }}
     <i
       class="fa fa-plus icon-button"
       title="Create new event"
       [routerLink]="['/events/new']"
     ></i>
   </div>
-  <div class="card-body">
+  <div class="card-body" *ngIf="events">
     <div class="row">
       <div
         class="col-sm-5"
@@ -26,4 +26,8 @@
       </div>
     </div>
   </div>
+</div>
+
+<div class="alert alert-danger" *ngIf="errorMessage">
+  {{ errorMessage }}
 </div>

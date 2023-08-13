@@ -12,3 +12,13 @@ export interface Participant {
   lastName: string;
   email: string;
 }
+
+export interface EventResolved {
+  event: Event | null;
+  error?: string;
+}
+
+export interface EventListResolved {
+  events: Event[] | null;
+  error?: string;
+}

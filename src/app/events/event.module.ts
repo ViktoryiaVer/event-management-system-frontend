@@ -7,12 +7,26 @@ import { CreateEventComponent } from './create-event/create-event.component';
 import { AddParticipantComponent } from './event-detail/add-participant/add-participant.component';
 import { RouterModule, Routes } from '@angular/router';
 import { EventListComponent } from './event-list.component';
+import { EventResolver } from './event-resolver.service';
+import { EventListResolver } from './event-list-resolver.service';
 
 const routes: Routes = [
-  { path: 'events', component: EventListComponent },
+  {
+    path: 'events',
+    component: EventListComponent,
+    resolve: { eventListResolved: EventListResolver },
+  },
   { path: 'events/new', component: CreateEventComponent },
-  { path: 'events/:id', component: EventDetailComponent },
-  { path: 'events/:id/edit', component: EditEventComponent },
+  {
+    path: 'events/:id',
+    component: EventDetailComponent,
+    resolve: { eventResolved: EventResolver },
+  },
+  {
+    path: 'events/:id/edit',
+    component: EditEventComponent,
+    resolve: { eventResolved: EventResolver },
+  },
   { path: 'events/:id/edit/participants', component: AddParticipantComponent },
 ];
 

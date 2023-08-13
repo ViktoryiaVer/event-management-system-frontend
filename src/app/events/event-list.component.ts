@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Event } from './event.model';
-import { EventService } from './event.service';
+import { Event, EventListResolved } from './event.model';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'ems-event-list',
@@ -10,14 +10,22 @@ import { EventService } from './event.service';
 export class EventListComponent implements OnInit {
   pageTitle: string = 'Events';
   events!: Event[];
+  errorMessage: string = '';
 
-  constructor(private eventService: EventService) {}
+  constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.eventService.getEvents().subscribe({
-      next: (events) => {
-        this.events = events;
-      },
-    });
+    const resolvedData: EventListResolved =
+      this.route.snapshot.data['eventListResolved'];
+    this.onEventRetrieved(resolvedData);
+  }
+
+  onEventRetrieved(resolvedData: EventListResolved): void {
+    if (resolvedData.events) {
+      this.events = resolvedData.events;
+    } else if (resolvedData.error) {
+      this.pageTitle = 'No events found';
+      this.errorMessage = resolvedData.error;
+    }
   }
 }

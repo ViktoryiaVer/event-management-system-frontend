@@ -1,50 +1,51 @@
-<div class="row" *ngIf="event">
-  <div class="card w-50 mb-3 p-0">
-    <div class="card-header">
-      {{ pageTitle }}
-    </div>
-    <div class="card-body">
-      <i
-        class="fa fa-times icon-button"
-        id="delete-icon"
-        title="Delete the event"
-        (click)="deleteEvent()"
-      ></i>
-      <i
-        class="fa fa-pencil-square-o icon-button"
-        id="pencil-icon"
-        title="Edit the event"
-        [routerLink]="['/events', event.id, 'edit']"
-      ></i>
-      <h4 class="card-title">{{ event.name }}</h4>
-      <h6 class="card-subtitle">{{ event.theme }}</h6>
-      <p class="card-text">{{ event.description }}</p>
-      <p class="card-text">
-        <small class="text-muted"
-          >Duration: {{ event.durationInMinutes }} minutes</small
-        >
-      </p>
-      <i
-        class="fa icon-button"
-        *ngIf="event.participants.length > 0"
-        [title]="getEventCardToolTip()"
-        (click)="toggleParticipantsDisplay()"
-        ngClass="{{
-          areParticipantsShown ? 'fa-chevron-up' : 'fa-chevron-down'
-        }}"
-      ></i>
-      <i
-        *ngIf="event.participants.length === 0"
-        class="fa fa-plus icon-button"
-        title="Add a participant"
-        [routerLink]="['/events', event.id, 'edit', 'participants']"
-      ></i>
-    </div>
+<div class="card w-50 mb-3 p-0">
+  <div class="card-header">
+    {{ pageTitle }}
   </div>
-  <div *ngIf="areParticipantsShown && event.participants.length > 0">
-    <ems-participant-list
-      [participants]="event.participants"
-      [eventId]="event.id"
-    ></ems-participant-list>
+
+  <div class="card-body" *ngIf="event">
+    <i
+      class="fa fa-times icon-button"
+      id="delete-icon"
+      title="Delete the event"
+      (click)="deleteEvent()"
+    ></i>
+    <i
+      class="fa fa-pencil-square-o icon-button"
+      id="pencil-icon"
+      title="Edit the event"
+      [routerLink]="['/events', event.id, 'edit']"
+    ></i>
+    <h4 class="card-title">{{ event.name }}</h4>
+    <h6 class="card-subtitle">{{ event.theme }}</h6>
+    <p class="card-text">{{ event.description }}</p>
+    <p class="card-text">
+      <small class="text-muted"
+        >Duration: {{ event.durationInMinutes }} minutes</small
+      >
+    </p>
+    <i
+      class="fa icon-button"
+      *ngIf="event.participants.length > 0"
+      [title]="getEventCardToolTip()"
+      (click)="toggleParticipantsDisplay()"
+      ngClass="{{ areParticipantsShown ? 'fa-chevron-up' : 'fa-chevron-down' }}"
+    ></i>
+    <i
+      *ngIf="event.participants.length === 0"
+      class="fa fa-plus icon-button"
+      title="Add a participant"
+      [routerLink]="['/events', event.id, 'edit', 'participants']"
+    ></i>
   </div>
+</div>
+<div *ngIf="areParticipantsShown && event.participants.length > 0">
+  <ems-participant-list
+    [participants]="event.participants"
+    [eventId]="event.id"
+  ></ems-participant-list>
+</div>
+
+<div class="alert alert-danger" *ngIf="errorMessage">
+  {{ errorMessage }}
 </div>

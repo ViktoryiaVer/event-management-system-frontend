@@ -41,6 +41,22 @@ export class CreateEventComponent implements OnInit, AfterViewInit {
     private router: Router
   ) {}
 
+  get name() {
+    return this.eventForm.controls['name'];
+  }
+
+  get description() {
+    return this.eventForm.controls['description'];
+  }
+
+  get theme() {
+    return this.eventForm.controls['theme'];
+  }
+
+  get durationInMinutes() {
+    return this.eventForm.controls['durationInMinutes'];
+  }
+
   ngOnInit(): void {
     this.eventForm = this.fb.group({
       name: ['', Validators.required],
@@ -62,22 +78,6 @@ export class CreateEventComponent implements OnInit, AfterViewInit {
           this.eventForm
         );
       });
-  }
-
-  get name() {
-    return this.eventForm.controls['name'];
-  }
-
-  get description() {
-    return this.eventForm.controls['description'];
-  }
-
-  get theme() {
-    return this.eventForm.controls['theme'];
-  }
-
-  get durationInMinutes() {
-    return this.eventForm.controls['durationInMinutes'];
   }
 
   saveEvent() {

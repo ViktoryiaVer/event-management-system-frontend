@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Event } from '../event.model';
+import { Event, EventResolved } from '../event.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EventService } from '../event.service';
 
@@ -12,6 +12,7 @@ export class EventDetailComponent implements OnInit {
   pageTitle: string = 'Event details';
   event!: Event;
   areParticipantsShown: boolean = false;
+  errorMessage: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -20,12 +21,19 @@ export class EventDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const id = String(this.route.snapshot.paramMap.get('id'));
-    this.eventService.getEvent(id).subscribe({
-      next: (event) => {
-        this.event = event;
-      },
-    });
+    const resolvedData: EventResolved =
+      this.route.snapshot.data['eventResolved'];
+    this.onEventRetrieved(resolvedData);
+  }
+
+  onEventRetrieved(resolvedData: EventResolved): void {
+    if (resolvedData.event) {
+      this.event = resolvedData.event;
+      this.pageTitle = `Event Details: ${this.event.name}`;
+    } else if (resolvedData.error) {
+      this.pageTitle = 'No event found';
+      this.errorMessage = resolvedData.error;
+    }
   }
 
   toggleParticipantsDisplay() {

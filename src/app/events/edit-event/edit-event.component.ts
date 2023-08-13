@@ -5,7 +5,7 @@ import {
   OnInit,
   ViewChildren,
 } from '@angular/core';
-import { Event } from '../event.model';
+import { Event, EventResolved } from '../event.model';
 import { EventService } from '../event.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -46,34 +46,6 @@ export class EditEventComponent implements OnInit, AfterViewInit {
     private eventService: EventService
   ) {}
 
-  ngOnInit(): void {
-    this.eventForm = this.fb.group({
-      name: ['', Validators.required],
-      description: ['', Validators.required],
-      theme: ['', Validators.required],
-      durationInMinutes: ['', [Validators.required, Validators.min(1)]],
-    });
-
-    this.subscription = this.route.paramMap.subscribe((params) => {
-      const id = String(params.get('id'));
-      this.getEvent(id);
-    });
-  }
-
-  ngAfterViewInit(): void {
-    const controlBlurs: Observable<any>[] = this.formInputElements.map(
-      (formControl: ElementRef) => fromEvent(formControl.nativeElement, 'blur')
-    );
-
-    merge(this.eventForm.valueChanges, ...controlBlurs)
-      .pipe(debounceTime(800))
-      .subscribe(() => {
-        this.displayMessage = this.genericValidator.processMessages(
-          this.eventForm
-        );
-      });
-  }
-
   get name() {
     return this.eventForm.controls['name'];
   }
@@ -90,11 +62,41 @@ export class EditEventComponent implements OnInit, AfterViewInit {
     return this.eventForm.controls['durationInMinutes'];
   }
 
-  getEvent(id: string): void {
-    this.eventService.getEvent(id).subscribe({
-      next: (event: Event) => this.populateEventFormData(event),
-      error: (err) => (this.errorMessage = err),
+  ngOnInit(): void {
+    this.eventForm = this.fb.group({
+      name: ['', Validators.required],
+      description: ['', Validators.required],
+      theme: ['', Validators.required],
+      durationInMinutes: ['', [Validators.required, Validators.min(1)]],
     });
+
+    const resolvedData: EventResolved =
+      this.route.snapshot.data['eventResolved'];
+    this.onEventRetrieved(resolvedData);
+  }
+
+  onEventRetrieved(resolvedData: EventResolved): void {
+    if (resolvedData.event) {
+      this.populateEventFormData(resolvedData.event);
+      this.pageTitle = `Edit event: ${this.event.name}`;
+    } else if (resolvedData.error) {
+      this.pageTitle = 'No event found';
+      this.errorMessage = resolvedData.error;
+    }
+  }
+
+  ngAfterViewInit(): void {
+    const controlBlurs: Observable<any>[] = this.formInputElements.map(
+      (formControl: ElementRef) => fromEvent(formControl.nativeElement, 'blur')
+    );
+
+    merge(this.eventForm.valueChanges, ...controlBlurs)
+      .pipe(debounceTime(800))
+      .subscribe(() => {
+        this.displayMessage = this.genericValidator.processMessages(
+          this.eventForm
+        );
+      });
   }
 
   populateEventFormData(event: Event): void {
