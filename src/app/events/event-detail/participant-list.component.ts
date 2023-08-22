@@ -1,7 +1,6 @@
 import { ActivatedRoute } from '@angular/router';
-import { Event, Participant } from './../event.model';
-import { Component, Input } from '@angular/core';
-import { EventService } from '../event.service';
+import { Participant } from './../event.model';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'ems-participant-list',
@@ -11,30 +10,15 @@ import { EventService } from '../event.service';
 export class ParticipantListComponent {
   @Input() participants!: Participant[];
   @Input() eventId!: string;
-  event!: Event;
+  @Output() deleteParticipantEvent = new EventEmitter<Participant>();
 
-  constructor(
-    private route: ActivatedRoute,
-    private eventService: EventService
-  ) {}
+  constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.eventId = String(this.route.snapshot.paramMap.get('id'));
-    this.eventService.getEvent(this.eventId).subscribe({
-      next: (event) => (this.event = event),
-    });
   }
 
   deleteParticipant(participant: Participant): void {
-    const eventToUpdate: Event = {
-      ...this.event,
-      participants: [
-        ...this.event.participants.filter((p) => p.email !== participant.email),
-      ],
-    };
-
-    this.eventService.updateEvent(eventToUpdate).subscribe({
-      next: () => (this.participants = eventToUpdate.participants),
-    });
+    this.deleteParticipantEvent.emit(participant);
   }
 }

@@ -42,6 +42,7 @@
 <div *ngIf="areParticipantsShown && event.participants.length > 0">
   <ems-participant-list
     [participants]="event.participants"
+    (deleteParticipantEvent)="deleteParticipantEvent($event)"
     [eventId]="event.id"
   ></ems-participant-list>
 </div>

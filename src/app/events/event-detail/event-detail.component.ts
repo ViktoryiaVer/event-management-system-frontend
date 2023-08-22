@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Event, EventResolved } from '../event.model';
+import { Event, EventResolved, Participant } from '../event.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EventService } from '../event.service';
 
@@ -49,6 +49,19 @@ export class EventDetailComponent implements OnInit {
   deleteEvent() {
     this.eventService.deleteEvent(this.event.id).subscribe({
       next: () => this.router.navigate(['/events']),
+    });
+  }
+
+  deleteParticipantEvent(participant: Participant): void {
+    const eventToUpdate: Event = {
+      ...this.event,
+      participants: [
+        ...this.event.participants.filter((p) => p.email !== participant.email),
+      ],
+    };
+
+    this.eventService.updateEvent(eventToUpdate).subscribe({
+      next: () => (this.event.participants = eventToUpdate.participants),
     });
   }
 }
