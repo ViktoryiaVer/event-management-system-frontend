@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError, throwError } from 'rxjs';
-import { Event } from './event.model';
+import { Event, Participant } from './event.model';
 
 @Injectable({
   providedIn: 'root',
@@ -32,6 +32,15 @@ export class EventService {
   updateEvent(event: Event): Observable<Event> {
     return this.http
       .put<Event>(`${this.endPointUrl}/${event.id}`, event)
+      .pipe(catchError(this.handleError));
+  }
+
+  addParticipantToEvent(
+    participant: Participant,
+    eventId: string
+  ): Observable<Event> {
+    return this.http
+      .put<Event>(`${this.endPointUrl}/${eventId}/participants`, participant)
       .pipe(catchError(this.handleError));
   }
 

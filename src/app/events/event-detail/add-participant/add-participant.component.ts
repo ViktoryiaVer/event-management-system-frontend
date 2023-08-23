@@ -2,6 +2,7 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  OnDestroy,
   OnInit,
   ViewChildren,
 } from '@angular/core';
@@ -13,8 +14,7 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EventService } from '../../event.service';
-import { Event } from '../../event.model';
-import { Observable, debounceTime, fromEvent, merge } from 'rxjs';
+import { Observable, Subscription, debounceTime, fromEvent, merge } from 'rxjs';
 import { GenericValidator } from 'src/app/shared/generic-validator';
 import { validationMessages } from 'src/app/shared/validation.messages';
 
@@ -23,20 +23,23 @@ import { validationMessages } from 'src/app/shared/validation.messages';
   templateUrl: './add-participant.component.html',
   styleUrls: ['./add-participant.component.css'],
 })
-export class AddParticipantComponent implements OnInit, AfterViewInit {
+export class AddParticipantComponent
+  implements OnInit, AfterViewInit, OnDestroy
+{
   @ViewChildren(FormControlName, { read: ElementRef })
   formInputElements!: ElementRef[];
 
   pageTitle: string = 'Add a participant to the event';
   participantForm!: FormGroup;
   eventId!: string;
-  event!: Event;
   errorMessage!: string;
 
   displayMessage: { [key: string]: string } = {};
   private genericValidator = new GenericValidator(
     validationMessages.participantForm
   );
+
+  private validationSubscription!: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -64,10 +67,6 @@ export class AddParticipantComponent implements OnInit, AfterViewInit {
       lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
     });
-
-    this.eventService.getEvent(this.eventId).subscribe({
-      next: (event) => (this.event = event),
-    });
   }
 
   ngAfterViewInit(): void {
@@ -75,7 +74,10 @@ export class AddParticipantComponent implements OnInit, AfterViewInit {
       (formControl: ElementRef) => fromEvent(formControl.nativeElement, 'blur')
     );
 
-    merge(this.participantForm.valueChanges, ...controlBlurs)
+    this.validationSubscription = this.validationSubscription = merge(
+      this.participantForm.valueChanges,
+      ...controlBlurs
+    )
       .pipe(debounceTime(800))
       .subscribe(() => {
         this.displayMessage = this.genericValidator.processMessages(
@@ -87,17 +89,12 @@ export class AddParticipantComponent implements OnInit, AfterViewInit {
   saveParticipant() {
     if (this.participantForm.valid) {
       if (this.participantForm.dirty) {
-        const eventToUpdate = {
-          ...this.event,
-          participants: [
-            ...this.event.participants,
-            this.participantForm.value,
-          ],
-        };
-        this.eventService.updateEvent(eventToUpdate).subscribe({
-          next: () => this.onSaveComplete(),
-          error: (err) => (this.errorMessage = err),
-        });
+        this.eventService
+          .addParticipantToEvent(this.participantForm.value, this.eventId)
+          .subscribe({
+            next: () => this.onSaveComplete(),
+            error: (err) => (this.errorMessage = err),
+          });
       }
       this.onSaveComplete();
     }
@@ -106,5 +103,9 @@ export class AddParticipantComponent implements OnInit, AfterViewInit {
   onSaveComplete(): void {
     this.participantForm.reset();
     this.router.navigate(['/events', this.eventId]);
+  }
+
+  ngOnDestroy(): void {
+    this.validationSubscription.unsubscribe();
   }
 }

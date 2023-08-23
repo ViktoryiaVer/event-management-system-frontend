@@ -2,6 +2,7 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  OnDestroy,
   OnInit,
   ViewChildren,
 } from '@angular/core';
@@ -15,14 +16,14 @@ import { EventService } from '../event.service';
 import { Router } from '@angular/router';
 import { GenericValidator } from 'src/app/shared/generic-validator';
 import { validationMessages } from 'src/app/shared/validation.messages';
-import { Observable, debounceTime, fromEvent, merge } from 'rxjs';
+import { Observable, Subscription, debounceTime, fromEvent, merge } from 'rxjs';
 
 @Component({
   selector: 'ems-create-event',
   templateUrl: './create-event.component.html',
   styleUrls: ['./create-event.component.css'],
 })
-export class CreateEventComponent implements OnInit, AfterViewInit {
+export class CreateEventComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren(FormControlName, { read: ElementRef })
   formInputElements!: ElementRef[];
 
@@ -34,6 +35,8 @@ export class CreateEventComponent implements OnInit, AfterViewInit {
   private genericValidator: GenericValidator = new GenericValidator(
     validationMessages.eventForm
   );
+
+  private validationSubscription!: Subscription;
 
   constructor(
     private fb: FormBuilder,
@@ -71,7 +74,10 @@ export class CreateEventComponent implements OnInit, AfterViewInit {
       (formControl: ElementRef) => fromEvent(formControl.nativeElement, 'blur')
     );
 
-    merge(this.eventForm.valueChanges, ...controlBlurs)
+    this.validationSubscription = merge(
+      this.eventForm.valueChanges,
+      ...controlBlurs
+    )
       .pipe(debounceTime(800))
       .subscribe(() => {
         this.displayMessage = this.genericValidator.processMessages(
@@ -92,5 +98,9 @@ export class CreateEventComponent implements OnInit, AfterViewInit {
   onSaveComplete(): void {
     this.eventForm.reset();
     this.router.navigate(['/events']);
+  }
+
+  ngOnDestroy(): void {
+    this.validationSubscription.unsubscribe();
   }
 }
