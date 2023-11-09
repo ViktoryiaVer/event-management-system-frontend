@@ -9,25 +9,43 @@ import { RouterModule, Routes } from '@angular/router';
 import { EventListComponent } from './event-list.component';
 import { EventResolver } from './event-resolver.service';
 import { EventListResolver } from './event-list-resolver.service';
+import { AuthGuard } from '../auth/auth.guard';
 
 const routes: Routes = [
   {
     path: 'events',
     component: EventListComponent,
     resolve: { eventListResolved: EventListResolver },
+    canActivate: [AuthGuard],
+    data: { roles: ['user', 'admin'] },
   },
-  { path: 'events/new', component: CreateEventComponent },
+  {
+    path: 'events/new',
+    component: CreateEventComponent,
+    canActivate: [AuthGuard],
+    data: { roles: ['admin'] },
+  },
+
   {
     path: 'events/:id',
     component: EventDetailComponent,
     resolve: { eventResolved: EventResolver },
+    canActivate: [AuthGuard],
+    data: { roles: ['user', 'admin'] },
   },
   {
     path: 'events/:id/edit',
     component: EditEventComponent,
     resolve: { eventResolved: EventResolver },
+    canActivate: [AuthGuard],
+    data: { roles: ['admin'] },
   },
-  { path: 'events/:id/edit/participants', component: AddParticipantComponent },
+  {
+    path: 'events/:id/edit/participants',
+    component: AddParticipantComponent,
+    canActivate: [AuthGuard],
+    data: { roles: ['admin'] },
+  },
 ];
 
 @NgModule({
