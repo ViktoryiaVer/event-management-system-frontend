@@ -10,6 +10,7 @@ import { EventListComponent } from './event-list.component';
 import { EventResolver } from './event-resolver.service';
 import { EventListResolver } from './event-list-resolver.service';
 import { AuthGuard } from '../auth/auth.guard';
+import { ROLE } from '../auth/role.model';
 
 const routes: Routes = [
   {
@@ -17,13 +18,13 @@ const routes: Routes = [
     component: EventListComponent,
     resolve: { eventListResolved: EventListResolver },
     canActivate: [AuthGuard],
-    data: { roles: ['user', 'admin'] },
+    data: { roles: [ROLE.USER, ROLE.ADMIN] },
   },
   {
     path: 'events/new',
     component: CreateEventComponent,
     canActivate: [AuthGuard],
-    data: { roles: ['admin'] },
+    data: { roles: [ROLE.ADMIN] },
   },
 
   {
@@ -31,20 +32,20 @@ const routes: Routes = [
     component: EventDetailComponent,
     resolve: { eventResolved: EventResolver },
     canActivate: [AuthGuard],
-    data: { roles: ['user', 'admin'] },
+    data: { roles: [ROLE.USER, ROLE.ADMIN] },
   },
   {
     path: 'events/:id/edit',
     component: EditEventComponent,
     resolve: { eventResolved: EventResolver },
     canActivate: [AuthGuard],
-    data: { roles: ['admin'] },
+    data: { roles: [ROLE.ADMIN] },
   },
   {
     path: 'events/:id/edit/participants',
     component: AddParticipantComponent,
     canActivate: [AuthGuard],
-    data: { roles: ['admin'] },
+    data: { roles: [ROLE.ADMIN] },
   },
 ];
 
