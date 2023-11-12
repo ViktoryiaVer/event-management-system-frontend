@@ -6,31 +6,28 @@ import {
   OnInit,
   ViewChildren,
 } from '@angular/core';
-import { Event, EventResolved } from '../event.model';
-import { EventService } from '../event.service';
-import { ActivatedRoute, Router } from '@angular/router';
 import {
-  FormGroup,
   FormBuilder,
-  Validators,
   FormControlName,
+  FormGroup,
+  Validators,
 } from '@angular/forms';
-import { Observable, Subscription, debounceTime, fromEvent, merge } from 'rxjs';
+import { EventService } from '../event.service';
+import { Router } from '@angular/router';
 import { GenericValidator } from 'src/app/shared/generic-validator';
 import { validationMessages } from 'src/app/shared/validation.messages';
+import { Observable, Subscription, debounceTime, fromEvent, merge } from 'rxjs';
 
 @Component({
-  selector: 'ems-edit-event',
-  templateUrl: './edit-event.component.html',
-  styleUrls: ['./edit-event.component.css'],
+  selector: 'ems-create-event',
+  templateUrl: './create-event.component.html',
+  styleUrls: ['./create-event.component.css'],
 })
-export class EditEventComponent implements OnInit, AfterViewInit, OnDestroy {
+export class CreateEventComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren(FormControlName, { read: ElementRef })
   formInputElements!: ElementRef[];
 
-  pageTitle: string = 'Edit an event';
-  event!: Event;
-
+  pageTitle: string = 'Create a new event';
   eventForm!: FormGroup;
   errorMessage!: string;
 
@@ -43,9 +40,8 @@ export class EditEventComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private fb: FormBuilder,
-    private route: ActivatedRoute,
-    private router: Router,
-    private eventService: EventService
+    private eventService: EventService,
+    private router: Router
   ) {}
 
   get name() {
@@ -71,20 +67,6 @@ export class EditEventComponent implements OnInit, AfterViewInit, OnDestroy {
       theme: ['', Validators.required],
       durationInMinutes: ['', [Validators.required, Validators.min(1)]],
     });
-
-    const resolvedData: EventResolved =
-      this.route.snapshot.data['eventResolved'];
-    this.onEventRetrieved(resolvedData);
-  }
-
-  onEventRetrieved(resolvedData: EventResolved): void {
-    if (resolvedData.event) {
-      this.populateEventFormData(resolvedData.event);
-      this.pageTitle = `Edit event: ${this.event.name}`;
-    } else if (resolvedData.error) {
-      this.pageTitle = 'No event found';
-      this.errorMessage = resolvedData.error;
-    }
   }
 
   ngAfterViewInit(): void {
@@ -104,36 +86,16 @@ export class EditEventComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  populateEventFormData(event: Event): void {
-    if (this.eventForm) {
-      this.eventForm.reset();
-    }
-    this.event = event;
-
-    this.eventForm.setValue({
-      name: this.event.name,
-      description: this.event.description,
-      theme: this.event.theme,
-      durationInMinutes: this.event.durationInMinutes,
-    });
-  }
-
-  updateEvent(): void {
+  saveEvent() {
     if (this.eventForm.valid) {
-      if (this.eventForm.dirty) {
-        const eventToUpdate = { ...this.event, ...this.eventForm.value };
-
-        this.eventService.updateEvent(eventToUpdate).subscribe({
-          next: () => this.onUpdateComplete(),
-          error: (err) => (this.errorMessage = err),
-        });
-      } else {
-        this.onUpdateComplete();
-      }
+      this.eventService.saveEvent(this.eventForm.value).subscribe({
+        next: () => this.onSaveComplete(),
+        error: (err) => (this.errorMessage = err),
+      });
     }
   }
 
-  onUpdateComplete(): void {
+  onSaveComplete(): void {
     this.eventForm.reset();
     this.router.navigate(['/events']);
   }

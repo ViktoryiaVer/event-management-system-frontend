@@ -60,8 +60,7 @@
               "browserTarget": "event-management-system-frontend:build:production"
             },
             "development": {
-              "browserTarget": "event-management-system-frontend:build:development",
-              "proxyConfig": "src/proxy.conf.json"
+              "browserTarget": "event-management-system-frontend:build:development"
             }
           },
           "defaultConfiguration": "development"

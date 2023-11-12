@@ -1,27 +1,20 @@
-import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { WelcomeComponent } from './home/welcome.component';
-import { EventsComponent } from './events/events.component';
-import { CommonModule } from '@angular/common';
-import { EventDetailComponent } from './events/event-detail/event-detail.component';
-import { EditEventComponent } from './events/edit-event/edit-event.component';
+import { AccessDeniedComponent } from './access-denied/access-denied.component';
 
 const routes: Routes = [
+  { path: 'home', component: WelcomeComponent },
+  { path: 'access-denied', component: AccessDeniedComponent },
   {
     path: '',
     pathMatch: 'full',
     redirectTo: '/home',
   },
-  { path: 'home', component: WelcomeComponent },
-  { path: 'events', component: EventsComponent },
-  { path: 'events/:id', component: EventDetailComponent },
-  { path: 'events/edit/:id', component: EditEventComponent },
 ];
 
 @NgModule({
-  declarations: [WelcomeComponent, EventsComponent],
-  imports: [RouterModule.forRoot(routes), CommonModule, FormsModule],
+  imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

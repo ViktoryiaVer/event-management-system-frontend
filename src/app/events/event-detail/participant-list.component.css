@@ -2,11 +2,6 @@
   cursor: pointer;
 }
 
-#pencil-icon,
 #delete-icon {
   float: right;
-}
-
-#pencil-icon {
-  margin-right: 5px;
 }

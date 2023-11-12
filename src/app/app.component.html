@@ -12,6 +12,26 @@
           >Events</a
         >
       </li>
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          (click)="doLogin()"
+          routerLinkActive="active"
+          routerLink="/login"
+          *ngIf="!isLoggedIn"
+          >Login</a
+        >
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          (click)="doLogout()"
+          routerLinkActive="active"
+          routerLink="/logout"
+          *ngIf="isLoggedIn"
+          >Logout</a
+        >
+      </li>
     </ul>
   </div>
 </nav>

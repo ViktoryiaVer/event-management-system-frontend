@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Event } from '../event.model';
-import { ActivatedRoute } from '@angular/router';
+import { Event, EventResolved, Participant } from '../event.model';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EventService } from '../event.service';
 
 @Component({
@@ -9,21 +9,31 @@ import { EventService } from '../event.service';
   styleUrls: ['./event-detail.component.css'],
 })
 export class EventDetailComponent implements OnInit {
-  event: Event | undefined;
+  pageTitle: string = 'Event details';
+  event!: Event;
   areParticipantsShown: boolean = false;
+  errorMessage: string = '';
 
   constructor(
     private route: ActivatedRoute,
-    private eventService: EventService
+    private eventService: EventService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    const id = String(this.route.snapshot.paramMap.get('id'));
-    this.eventService.getEvent(id).subscribe({
-      next: (event) => {
-        this.event = event;
-      },
-    });
+    const resolvedData: EventResolved =
+      this.route.snapshot.data['eventResolved'];
+    this.onEventRetrieved(resolvedData);
+  }
+
+  onEventRetrieved(resolvedData: EventResolved): void {
+    if (resolvedData.event) {
+      this.event = resolvedData.event;
+      this.pageTitle = `Event Details: ${this.event.name}`;
+    } else if (resolvedData.error) {
+      this.pageTitle = 'No event found';
+      this.errorMessage = resolvedData.error;
+    }
   }
 
   toggleParticipantsDisplay() {
@@ -34,5 +44,24 @@ export class EventDetailComponent implements OnInit {
     return `Click to ${
       this.areParticipantsShown ? 'hide' : 'show'
     } participants `;
+  }
+
+  deleteEvent() {
+    this.eventService.deleteEvent(this.event.id).subscribe({
+      next: () => this.router.navigate(['/events']),
+    });
+  }
+
+  deleteParticipantEvent(participant: Participant): void {
+    const eventToUpdate: Event = {
+      ...this.event,
+      participants: [
+        ...this.event.participants.filter((p) => p.email !== participant.email),
+      ],
+    };
+
+    this.eventService.updateEvent(eventToUpdate).subscribe({
+      next: () => (this.event.participants = eventToUpdate.participants),
+    });
   }
 }
